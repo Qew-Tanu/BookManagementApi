@@ -1,0 +1,56 @@
+@baseUrl = http://localhost:4003/api
+
+### Register a new user
+POST {{baseUrl}}/auth/register
+Content-Type: application/json
+
+{
+    "name": "Test User",
+    "email": "test@example.com",
+    "password": "password123"
+}
+
+### Login
+# @name login
+POST {{baseUrl}}/auth/login
+Content-Type: application/json
+
+{
+    "email": "test@example.com",
+    "password": "password123"
+}
+
+### Variable for token (copy from login response manually for now or use automation if supported)
+@token = {{login.response.body.accessToken}}
+
+
+### Create a Book (Protected)
+POST {{baseUrl}}/books
+Content-Type: application/json
+Authorization: Bearer {{token}}
+
+{
+    "title": "The Great Gatsby",
+    "author": "F. Scott Fitzgerald",
+    "published_year": 1925,
+    "genre": "Novel"
+}
+
+### Get All Books (Public)
+GET {{baseUrl}}/books
+
+### Get Book by ID (Public)
+GET {{baseUrl}}/books/1
+
+### Update Book (Protected)
+PUT {{baseUrl}}/books/1
+Content-Type: application/json
+Authorization: Bearer {{token}}
+
+{
+    "genre": "Classic Literature"
+}
+
+### Delete Book (Protected)
+DELETE {{baseUrl}}/books/1
+Authorization: Bearer {{token}}
