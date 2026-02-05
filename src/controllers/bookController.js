@@ -1,4 +1,8 @@
 const { Book } = require("../models");
+const { Op } = require("sequelize");
+const _ = require("lodash");
+
+const genreList = ["Mystery", "Fantasy", "Romance", "Horror", "Other"];
 
 exports.createBook = async (req, res) => {
   try {
@@ -17,18 +21,10 @@ exports.createBook = async (req, res) => {
 
 exports.getAllBooks = async (req, res) => {
   try {
-    const { current, pageSize, title, author, published_year, genre } = req.query;
+    const { current, pageSize, genre } = req.query;
 
     const where = {};
-    if (title) {
-      where.title = title;
-    }
-    if (author) {
-      where.author = author;
-    }
-    if (published_year) {
-      where.published_year = published_year;
-    }
+
     if (genre) {
       where.genre = genre;
     }
@@ -91,6 +87,53 @@ exports.deleteBook = async (req, res) => {
     }
     await book.destroy();
     res.status(200).json({ message: "Book deleted successfully" });
+  } catch (error) {
+    res.status(500).json({ message: error.message });
+  }
+};
+
+exports.report = async (req, res) => {
+  try {
+    const { genre, startYear, endYear } = req.query;
+
+    const where = {};
+
+    if (startYear && endYear) {
+      where.published_year = {
+        [Op.between]: [parseInt(startYear), parseInt(endYear)],
+      };
+    }
+    if (genre) {
+      where.genre = genre;
+    }
+
+    const books = await Book.findAll({
+      where: where,
+    });
+
+    const getUniqueYears = _.groupBy(books, "published_year");
+    const result = [];
+    for (const year in getUniqueYears) {
+      const bookData = getUniqueYears[year];
+      const countData = _.countBy(bookData, "genre");
+
+      const resultYear = {
+        year: year,
+        ...genreList.reduce((acc, genre) => {
+          if (genre === "Other") {
+            acc[genre] = countData["null"] || 0;
+          } else {
+            acc[genre] = countData[genre] || 0;
+          }
+          return acc;
+        }, {}),
+        name: String(year),
+        value: bookData.length,
+      };
+      result.push(resultYear);
+    }
+
+    res.status(200).json(result);
   } catch (error) {
     res.status(500).json({ message: error.message });
   }
