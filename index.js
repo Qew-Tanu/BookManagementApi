@@ -3,8 +3,8 @@ const cors = require('cors');
 const db = require('./src/models');
 const authRoutes = require('./src/routes/authRoutes');
 const bookRoutes = require('./src/routes/bookRoutes');
-const path = require('path');
-require('dotenv').config({ path: path.resolve(__dirname, '.env.local') });
+const path = require('path'); 
+require('dotenv').config();
 
 const app = express();
 const PORT = process.env.PORT || 3000;

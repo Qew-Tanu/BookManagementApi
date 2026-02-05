@@ -2,7 +2,7 @@ const { User } = require('../models');
 const jwt = require('jsonwebtoken');
 const bcrypt = require('bcryptjs');
 const path = require('path');
-require('dotenv').config({ path: path.resolve(__dirname, '../../.env.local') });
+require('dotenv').config();
 
 const jwtSecret = process.env.JWT_SECRET || 'default_secret_key';
 

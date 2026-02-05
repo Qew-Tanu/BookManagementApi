@@ -1,9 +1,10 @@
 const { Sequelize } = require('sequelize');
 const path = require('path');
-require('dotenv').config({ path: path.resolve(__dirname, '../../.env.local') });
+require('dotenv').config();
 
 const sequelize = new Sequelize(process.env.DATABASE_URL, {
   dialect: 'postgres',
+  dialectModule: require('pg'),
   logging: false,
   dialectOptions: {
     ssl: {
