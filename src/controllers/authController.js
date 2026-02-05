@@ -52,7 +52,7 @@ exports.login = async (req, res) => {
 exports.getMe = async (req, res) => {
   try {
     const user = await User.findByPk(req.userId, {
-      attributes: ['id', 'name', 'email'] // Exclude password
+      attributes: ['id', 'name', 'email']
     });
 
     if (!user) {

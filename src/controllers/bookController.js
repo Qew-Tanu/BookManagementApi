@@ -17,7 +17,7 @@ exports.createBook = async (req, res) => {
 
 exports.getAllBooks = async (req, res) => {
   try {
-    const { skip, limit, title, author, published_year, genre } = req.query;
+    const { current, pageSize, title, author, published_year, genre } = req.query;
 
     const where = {};
     if (title) {
@@ -33,9 +33,9 @@ exports.getAllBooks = async (req, res) => {
       where.genre = genre;
     }
 
-    const limitVal = limit ? parseInt(limit) : 10;
+    const limitVal = pageSize ? parseInt(pageSize) : 10;
 
-    const offsetVal = skip ? parseInt(skip) : 0;
+    const offsetVal = current ? (parseInt(current) - 1) * limitVal : 0;
 
     const books = await Book.findAll({
       where: where,
@@ -91,18 +91,6 @@ exports.deleteBook = async (req, res) => {
     }
     await book.destroy();
     res.status(200).json({ message: "Book deleted successfully" });
-  } catch (error) {
-    res.status(500).json({ message: error.message });
-  }
-};
-
-exports.getGenre = async (req, res) => {
-  try {
-    const genre = await Book.findAll({
-      attributes: ["genre"],
-      group: ["genre"],
-    });
-    res.status(200).json(books);
   } catch (error) {
     res.status(500).json({ message: error.message });
   }

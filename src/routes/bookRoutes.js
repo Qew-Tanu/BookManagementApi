@@ -8,6 +8,5 @@ router.get('/:id', bookController.getBookById); // Public access to view a book 
 router.post('/', verifyToken, bookController.createBook);
 router.patch('/:id', verifyToken, bookController.updateBook);
 router.delete('/:id', verifyToken, bookController.deleteBook);
-router.get('/genres', bookController.getGenre);
 
 module.exports = router;
